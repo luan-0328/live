@@ -1,0 +1,30 @@
+# ============================================================
+# 多阶段构建版本（备选）：容器内 mvn package，不需要本地预装 JDK / Maven
+#
+# 适用场景：刚 clone 仓库、手上还没有 app.jar 的时候。
+#     docker compose -f docker-compose.yml -f docker-compose.clone.yml up -d --build
+#
+# 与默认 Dockerfile 的区别：默认那份假设 app.jar 已由本地打好（构建快），
+# 这份把编译搬进容器（首次要下载 Maven 与依赖，约 2~5 分钟）。
+# ============================================================
+
+# ---------- 构建阶段 ----------
+FROM maven:3.9-eclipse-temurin-21 AS build
+WORKDIR /build
+# 先拷 pom 再拷源码：依赖层可复用，改代码后重建更快
+COPY pom.xml .
+COPY src ./src
+RUN mvn -B -DskipTests package
+
+# ---------- 运行阶段 ----------
+FROM eclipse-temurin:21-jre-jammy
+WORKDIR /app
+COPY --from=build /build/target/geo-community-1.0.0.jar app.jar
+EXPOSE 8080
+# JVM 参数与默认 Dockerfile 保持一致（2C2G 限堆 + SerialGC）
+ENTRYPOINT ["java", \
+            "-Xms192m", "-Xmx320m", \
+            "-XX:MaxMetaspaceSize=128m", \
+            "-XX:+UseSerialGC", \
+            "-XX:+ExitOnOutOfMemoryError", \
+            "-jar", "app.jar"]

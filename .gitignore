@@ -1,0 +1,28 @@
+# Java / Maven
+target/
+*.class
+app.jar
+
+# 前端
+node_modules/
+frontend/dist/
+npm-debug.log*
+
+# 日志 / 运行时
+logs/
+*.log
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# 环境变量 / 密钥
+.env
+.env.local
+
+# ---------- 构建产物 / 打包文件（绝不提交）----------
+geo-deploy.tar.gz
+src.zip
+*.tar.gz
+*.zip

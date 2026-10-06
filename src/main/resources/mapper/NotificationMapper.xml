@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.geocommunity.mapper.NotificationMapper">
+
+    <insert id="insertBatch">
+        INSERT INTO notification (event_id, user_id, from_user_id, type, content, post_id, is_read, created_at)
+        VALUES
+        <foreach collection="list" item="n" separator=",">
+            (#{n.eventId}, #{n.userId}, #{n.fromUserId}, #{n.type}, #{n.content}, #{n.postId}, #{n.isRead}, #{n.createdAt})
+        </foreach>
+        ON DUPLICATE KEY UPDATE id = id
+    </insert>
+
+</mapper>

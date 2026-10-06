@@ -1,0 +1,14 @@
+# ============================================================
+# 叠加使用的 compose 片段：只有"手上没有 app.jar"时才需要它
+#
+#     docker compose -f docker-compose.yml -f docker-compose.clone.yml up -d --build
+#
+# 作用：把 app 服务的构建切到多阶段 Dockerfile（容器内 mvn package），
+#       这样刚 clone 仓库、没有本地 jar 的人也能一条命令起起来。
+# 默认的 docker-compose.yml 保持不变（本地已打好 app.jar 时构建更快）。
+# ============================================================
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.multistage
